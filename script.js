@@ -1,9 +1,9 @@
-/* Partículas de gelo */
+/* Partículas de neve */
 (function () {
     var canvas = document.getElementById('ice-canvas');
     var ctx = canvas.getContext('2d');
     var particles = [];
-    var COUNT = 45;
+    var COUNT = 60;
 
     function resize() {
         canvas.width = window.innerWidth;
@@ -11,85 +11,74 @@
     }
 
     function randomParticle(fromBottom) {
-        var type = Math.random();
-        /* 50% flocos médios, 30% cristais grandes, 20% pontos pequenos */
-        var size = type > 0.8
-            ? Math.random() * 3 + 2          /* pequenos: 2–5px */
-            : type > 0.3
-                ? Math.random() * 5 + 5      /* médios: 5–10px */
-                : Math.random() * 6 + 10;    /* cristais: 10–16px */
+        var roll = Math.random();
+        var size = roll < 0.65
+            ? Math.random() * 4 + 2      /* maioria: flocos suaves 2–6px */
+            : Math.random() * 7 + 7;     /* minoria: cristais 7–14px */
 
         return {
             x: Math.random() * canvas.width,
             y: fromBottom
-                ? canvas.height + Math.random() * 150
+                ? canvas.height + Math.random() * 100
                 : Math.random() * canvas.height,
             size: size,
-            speedY: (1 / size) * 18 + Math.random() * 0.6, /* maiores sobem mais devagar */
-            opacity: Math.random() * 0.4 + 0.45,
+            speedY: Math.random() * 0.5 + 0.25,
+            opacity: Math.random() * 0.5 + 0.35,
             wave: Math.random() * Math.PI * 2,
-            waveSpeed: Math.random() * 0.025 + 0.008,
-            drift: (Math.random() - 0.5) * 0.4,
-            rotation: Math.random() * Math.PI,
-            rotSpeed: (Math.random() - 0.5) * 0.012,
+            waveSpeed: Math.random() * 0.02 + 0.005,
+            drift: (Math.random() - 0.5) * 0.3,
+            rotation: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.008,
+            isCrystal: roll >= 0.65,
         };
     }
 
-    function drawCrystal(x, y, size, rotation, opacity) {
-        var arms = 6;
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(rotation);
-        ctx.strokeStyle = 'rgba(180,225,255,' + opacity + ')';
-        ctx.shadowColor = 'rgba(100,181,246,' + (opacity * 0.9) + ')';
-        ctx.shadowBlur = size * 1.2;
-        ctx.lineWidth = size > 10 ? 1.4 : 1;
+    /* Floco suave: gradiente radial branco com borda transparente */
+    function drawSoftFlake(p) {
+        var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+        g.addColorStop(0,   'rgba(255,255,255,' + p.opacity + ')');
+        g.addColorStop(0.5, 'rgba(230,245,255,' + (p.opacity * 0.6) + ')');
+        g.addColorStop(1,   'rgba(255,255,255,0)');
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
+    }
 
-        for (var a = 0; a < arms; a++) {
+    /* Cristal de neve: 6 braços, linhas finas brancas */
+    function drawCrystal(p) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+
+        var s = p.size;
+        ctx.strokeStyle = 'rgba(255,255,255,' + p.opacity + ')';
+        ctx.lineWidth = 1;
+        ctx.shadowColor = 'rgba(200,230,255,' + (p.opacity * 0.5) + ')';
+        ctx.shadowBlur = s * 0.8;
+
+        for (var i = 0; i < 6; i++) {
             ctx.save();
-            ctx.rotate((Math.PI / arms) * a);
+            ctx.rotate((Math.PI / 3) * i);
             ctx.beginPath();
             ctx.moveTo(0, 0);
-            ctx.lineTo(0, -size);
-            /* galhos laterais */
-            ctx.moveTo(0, -size * 0.35);
-            ctx.lineTo(size * 0.22, -size * 0.55);
-            ctx.moveTo(0, -size * 0.35);
-            ctx.lineTo(-size * 0.22, -size * 0.55);
-            ctx.moveTo(0, -size * 0.6);
-            ctx.lineTo(size * 0.18, -size * 0.75);
-            ctx.moveTo(0, -size * 0.6);
-            ctx.lineTo(-size * 0.18, -size * 0.75);
+            ctx.lineTo(0, -s);
+            /* dois pares de galhos por braço */
+            ctx.moveTo(0, -s * 0.38); ctx.lineTo( s * 0.2, -s * 0.55);
+            ctx.moveTo(0, -s * 0.38); ctx.lineTo(-s * 0.2, -s * 0.55);
+            ctx.moveTo(0, -s * 0.65); ctx.lineTo( s * 0.15, -s * 0.78);
+            ctx.moveTo(0, -s * 0.65); ctx.lineTo(-s * 0.15, -s * 0.78);
             ctx.stroke();
             ctx.restore();
         }
 
-        /* núcleo */
+        /* ponto central */
         ctx.beginPath();
-        ctx.arc(0, 0, size * 0.12, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(220,240,255,' + opacity + ')';
+        ctx.arc(0, 0, s * 0.1, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,' + p.opacity + ')';
         ctx.fill();
 
         ctx.restore();
-    }
-
-    function drawFlake(x, y, size, opacity) {
-        ctx.save();
-        ctx.shadowColor = 'rgba(100,181,246,' + opacity + ')';
-        ctx.shadowBlur = size * 1.8;
-        ctx.beginPath();
-        ctx.arc(x, y, size * 0.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(210,235,255,' + opacity + ')';
-        ctx.fill();
-        ctx.restore();
-    }
-
-    function init() {
-        resize();
-        particles = [];
-        for (var i = 0; i < COUNT; i++) {
-            particles.push(randomParticle(false));
-        }
     }
 
     var blueSections = document.querySelectorAll('.hero, .ranking-section');
@@ -105,7 +94,21 @@
         ctx.clip();
     }
 
-    function tick() {
+    function init() {
+        resize();
+        particles = [];
+        for (var i = 0; i < COUNT; i++) {
+            particles.push(randomParticle(false));
+        }
+    }
+
+    var lastTime = null;
+
+    function tick(now) {
+        if (!lastTime) lastTime = now;
+        var dt = Math.min((now - lastTime) / 16.67, 3); /* normaliza pra 60fps */
+        lastTime = now;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
         clipToBlueZones();
@@ -113,20 +116,20 @@
         for (var i = 0; i < particles.length; i++) {
             var p = particles[i];
 
-            p.wave += p.waveSpeed;
-            p.x += Math.sin(p.wave) * 0.6 + p.drift;
-            p.y -= p.speedY;
-            p.rotation += p.rotSpeed;
+            p.wave += p.waveSpeed * dt;
+            p.x += (Math.sin(p.wave) * 0.5 + p.drift) * dt;
+            p.y -= p.speedY * dt;
+            p.rotation += p.rotSpeed * dt;
 
             if (p.y < -p.size * 2) {
                 particles[i] = randomParticle(true);
                 continue;
             }
 
-            if (p.size >= 10) {
-                drawCrystal(p.x, p.y, p.size, p.rotation, p.opacity);
+            if (p.isCrystal) {
+                drawCrystal(p);
             } else {
-                drawFlake(p.x, p.y, p.size, p.opacity);
+                drawSoftFlake(p);
             }
         }
 
@@ -135,9 +138,8 @@
     }
 
     window.addEventListener('resize', resize);
-
     init();
-    tick();
+    requestAnimationFrame(tick);
 })();
 
 /* Agendamento WhatsApp */
