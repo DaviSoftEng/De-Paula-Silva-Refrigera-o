@@ -27,6 +27,21 @@ body {
     overflow-x: hidden;
 }
 
+/* ÍCONE WHATSAPP */
+.wpp-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+.wpp-icon-lg {
+    width: 28px;
+    height: 28px;
+    fill: #fff;
+}
+
 /* CANVAS PARTÍCULAS */
 #ice-canvas {
     position: fixed;
