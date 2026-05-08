@@ -76,6 +76,13 @@ nav {
     gap: 12px;
 }
 
+.nav-logo-img {
+    height: 56px;
+    width: auto;
+    border-radius: 8px;
+    display: block;
+}
+
 .nav-logo-icon {
     width: 42px;
     height: 42px;
@@ -800,41 +807,61 @@ nav {
     color: var(--muted);
 }
 
-/* FOOTER */
-footer {
-    background: var(--dark);
-    color: rgba(255, 255, 255, 0.6);
-    padding: 50px 6% 30px;
+/* CONTATO */
+.contact-section {
+    background: linear-gradient(135deg, var(--dark), var(--navy));
+    padding: 90px 6%;
     text-align: center;
 }
 
-.footer-logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    color: #fff;
+.contact-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 860px;
+    margin: 0 auto 48px;
+}
+
+.contact-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px 20px;
+}
+
+.contact-icon {
+    font-size: 30px;
+    margin-bottom: 12px;
+}
+
+.contact-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
     margin-bottom: 8px;
-    letter-spacing: 1px;
 }
 
-.footer-sub {
-    font-size: 13px;
-    margin-bottom: 24px;
+.contact-value {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
 }
 
-.social-links {
+.contact-actions {
     display: flex;
     justify-content: center;
     gap: 16px;
-    margin-bottom: 32px;
+    flex-wrap: wrap;
 }
 
 .social-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
+    padding: 12px 24px;
     border-radius: 100px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     text-decoration: none;
     transition: all .2s;
@@ -860,10 +887,14 @@ footer {
     background: rgba(37, 211, 102, 0.35);
 }
 
-.footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 24px;
+/* PAGE FOOTER */
+.page-footer {
+    background: var(--dark);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 24px 6%;
+    text-align: center;
     font-size: 12px;
+    color: rgba(255, 255, 255, 0.35);
 }
 
 /* BOTÃO FLUTUANTE WHATSAPP */
@@ -931,6 +962,10 @@ footer {
     }
 
     .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-cards {
         grid-template-columns: 1fr;
     }
 }
